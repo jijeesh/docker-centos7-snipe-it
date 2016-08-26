@@ -16,7 +16,7 @@ RUN mkdir /var/log/${cname}_$servn
 RUN mkdir /etc/httpd/sites-available
 RUN mkdir /etc/httpd/sites-enabled
 RUN mkdir -p ${dir}${cname}_${servn}/logs
-RUN mkdir -p ${dir}${cname}_${servn}/public_html
+RUN mkdir -p ${dir}${cname}_${servn}/snipe-it
 
 RUN printf '# * Hardening Apache \n\
 ServerTokens Prod \n\
@@ -34,10 +34,10 @@ RUN printf "#### $cname $servn \n\
 <VirtualHost ${listen}:80> \n\
 ServerName ${servn} \n\
 ServerAlias ${alias} \n\
-DocumentRoot ${dir}${cname}_${servn}/public_html \n\
+DocumentRoot ${dir}${cname}_${servn}/snipe-it/public \n\
 ErrorLog ${dir}${cname}_${servn}/logs/error.log \n\
 CustomLog ${dir}${cname}_${servn}/logs/requests.log combined \n\
-<Directory ${dir}${cname}_${servn}/public_html> \n\
+<Directory ${dir}${cname}_${servn}/snipe-it/public> \n\
 Options -Indexes \n\
 Options -ExecCGI -Includes \n\
 LimitRequestBody 204800 \n\
