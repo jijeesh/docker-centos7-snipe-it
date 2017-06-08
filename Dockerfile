@@ -27,7 +27,9 @@ RUN mkdir /etc/httpd/sites-enabled
 RUN mkdir -p ${dir}${cname}_${servn}/logs
 RUN mkdir -p ${dir}${cname}_${servn}/snipe-it
 #Switch to Apache's web-root folder and clone the latest version of Snipe-IT.
+VOLUME ${dir}${cname}_${servn}/snipe-it
 WORKDIR ${dir}${cname}_${servn}/snipe-it
+
 
 RUN git clone https://github.com/snipe/snipe-it .
 #Create the .env file from example file provided.
