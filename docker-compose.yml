@@ -1,0 +1,10 @@
+version: '2'
+services:
+  snipe-it:
+    image: jijeesh/snipe-it
+    ports:
+      - "8095:80"
+    mem_limit: 1000m
+    volumes:
+     - ./snipe-it:/var/www/www_example.com/snipe-it
+    restart: always

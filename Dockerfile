@@ -7,8 +7,17 @@ ENV dir /var/www/
 ENV user apache
 ENV listen *
 #Virtual hosting
-RUN yum install -y httpd
-RUN yum install -y --skip-broken php php-devel php-mysqlnd php-common php-pdo php-mbstring php-xml
+RUN yum install -y httpd epel-release wget
+RUN wget -q http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+#RUN wget -q https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+RUN rpm -Uvh remi-release-7.rpm
+RUN yum-config-manager --enable remi-php70
+RUN yum -y install php php-openssl php-pdo php-mbstring php-tokenizer php-curl php-mysql php-ldap php-zip php-fileinfo php-gd php-dom php-mcrypt
+RUN yum -y install git curl
+RUN cd ~
+RUN curl -sS https://getcomposer.org/installer | php
+RUN mv composer.phar /usr/bin/composer
+
 RUN mkdir -p $dir${cname}_$servn
 RUN chown -R ${user}:${user}  $dir${cname}_$servn
 RUN chmod -R 755  $dir${cname}_$servn
@@ -17,6 +26,21 @@ RUN mkdir /etc/httpd/sites-available
 RUN mkdir /etc/httpd/sites-enabled
 RUN mkdir -p ${dir}${cname}_${servn}/logs
 RUN mkdir -p ${dir}${cname}_${servn}/snipe-it
+#Switch to Apache's web-root folder and clone the latest version of Snipe-IT.
+WORKDIR ${dir}${cname}_${servn}/snipe-it
+
+RUN git clone https://github.com/snipe/snipe-it .
+#Create the .env file from example file provided.
+RUN cp .env.example .env
+#Provide the appropriate ownership and file permissions.
+RUN chown -R apache:apache storage public/uploads
+RUN chmod -R 755 storage
+RUN chmod -R 755 public/uploads
+#Install PHP dependencies using Composer.
+RUN composer install --no-dev --prefer-source
+
+#Generate the "APP_Key".
+RUN php artisan key:generate
 
 RUN printf '# * Hardening Apache \n\
 ServerTokens Prod \n\
